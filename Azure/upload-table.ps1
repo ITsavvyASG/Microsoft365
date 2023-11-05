@@ -68,12 +68,11 @@ write-host $Table + "Table Not Found"
   }
   Else{
 do{
-Start-Sleep -Seconds .001
+Start-Sleep -Seconds 40
 $CreateTable = New-AzStorageTable -Name $tableName -Context $storageCtx
 $createtable.Name
 }until($createtable.Name -eq $tableName)
-
-
+$table = (Get-AzStorageTable -Name $tableName -Context $storageCtx).CloudTable
 }
 
 #$CreateTable.Name
@@ -96,8 +95,6 @@ $createtable.Name
 
     foreach ($row in $csvData) {
         $rowData = [ordered]@{
-            PartitionKey = $PartitionKey
-            RowKey = [guid]::NewGuid().ToString()
         }
 
         foreach ($column in $csvData[0].PSObject.Properties.Name) {
