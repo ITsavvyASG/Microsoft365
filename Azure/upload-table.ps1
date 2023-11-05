@@ -47,19 +47,33 @@ $processes = @()
 $storageCtx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
 #$tableName = "testTable01"
 
+
+
+try{
 $table = (Get-AzStorageTable -Name $tableName -Context $storageCtx).CloudTable
+}
+catch{
+write-host $Table + "Table Not Found"
+}
 
 
 #Remove-AzStorageTable -Name $tableName -Context $storageCtx -force
-$DeletedTable = Get-AzTableRow `
-    -table $table| Remove-AzTableRow -table $table
+
 
 
   #  Get-AzTableRow -table $tablename
   if($table){
+  $DeletedTable = Get-AzTableRow `
+    -table $table| Remove-AzTableRow -table $table
   }
   Else{
+do{
+Start-Sleep -Seconds .001
 $CreateTable = New-AzStorageTable -Name $tableName -Context $storageCtx
+$createtable.Name
+}until($createtable.Name -eq $tableName)
+
+
 }
 
 #$CreateTable.Name
@@ -100,3 +114,25 @@ $CreateTable = New-AzStorageTable -Name $tableName -Context $storageCtx
 
     #upload-table "testTable01" "key" $mxcheck
     #################################################################################################################################
+
+
+    function Get-TableAz {
+
+    param (
+        $NameforTable
+    )
+$storageAccountName = 'rgtd'
+$tableName = $NameforTable
+$sasToken = '?sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2060-11-05T10:02:19Z&st=2023-11-05T03:02:19Z&spr=https&sig=AdFl1pw8OninFqrKceNqIOD5YhV%2B1NzsglCg67ZW%2FTg%3D'
+# Step 2, Connect to Azure Table Storage
+$storageCtx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
+#$tableName = "testTable01"
+
+$table = (Get-AzStorageTable -Name $tableName -Context $storageCtx).CloudTable
+
+
+    $Donwloadedtable = Get-AzTableRow -table $table
+    
+    return $Donwloadedtable
+
+    }
